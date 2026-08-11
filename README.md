@@ -45,15 +45,18 @@
 
 ## Current Scope
 
-当前只开发 **Job Analyzer V0.1**。
+当前开发 **Job Analyzer V0.1**。
 
-第一阶段先实现其中的 **Step 1：JD Analysis**：
+**Step 1：JD Analysis 已完成并跑通。**
 
-1. 用户输入招聘 JD；
-2. 系统调用预设 JD 分析规则和 LLM；
-3. 返回岗位要求分析与岗位信号分析结果。
+当前进入 **Step 2：Match & Gap Analysis** 的开发阶段：
 
-当前目标是先验证 JD 分析流程是否稳定、有效，不提前实现后续模块和复杂功能。
+1. Step 1 完成后可继续进入 Step 2，系统自动保留并传递当前岗位分析结果；
+2. 用户在 Step 2 补充个人资料或简历文本；
+3. 分析个人经历与岗位要求的匹配情况和主要差距；
+4. 输出可供后续岗位风险与应聘判断继续使用的分析结果。
+
+Step 2 的具体模型分析规则、概念定义和输出结构由 `prompts/match_analysis.md` 定义。
 
 ## V0.1 Tech Stack
 
@@ -67,12 +70,12 @@
 
 ### Job Analyzer
 
-- Step 1：JD Analysis
-- Step 2：个人匹配与差距分析
-- Step 3：岗位风险与综合应聘判断
-- 文件上传
-- 公司信息补充与外部搜索
-- 历史岗位分析保存
+- [x] Step 1：JD Analysis
+- [ ] Step 2：Match & Gap Analysis（当前）
+- [ ] Step 3：Risk & Decision Analysis
+- [ ] 文件上传
+- [ ] 公司信息补充与外部搜索
+- [ ] 历史岗位分析保存
 
 ### Future Modules
 

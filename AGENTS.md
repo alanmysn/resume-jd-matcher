@@ -4,28 +4,39 @@
 
 ## Current Goal
 
-当前只开发 **Job Analyzer V0.1 — Step 1: JD Analysis**。
+当前开发 **Job Analyzer V0.1 — Step 2: Match & Gap Analysis**。
 
-目标是实现最小完整流程：
+**Step 1: JD Analysis 已完成并跑通，作为 Step 2 的稳定前置输入。**
+
+Step 2 的目标是实现最小完整流程：
 
 ```text
 输入 JD
-→ 读取 JD Analysis Prompt
+→ Step 1：JD Analysis
+→ 展示结果，并提供“清空 / 分析新 JD”与“继续分析”
+→ 点击“继续分析”后自动保留 Step 1 结果
+→ 输入个人资料 / 简历文本
+→ 读取 Match & Gap Analysis Prompt
 → 调用 LLM API
-→ 展示分析结果
+→ 展示匹配与差距分析结果
 ```
 
-除非明确要求，不实现 README Roadmap 中的后续功能。
+Step 2 的产品范围与 Prompt 已定稿；具体模型分析规则和输出结构以 `prompts/match_analysis.md` 为准。
+
+除非明确要求，不实现 Step 3 或 README Roadmap 中其他后续功能。
 
 ## Source of Truth
 
 开发时按以下文件分工执行：
 
-- `README.md`：项目定位、模块结构与 Roadmap；
-- `docs/requirements-job-analyzer.md`：当前产品功能与范围；
-- `prompts/jd_analysis.md`：Step 1 的模型分析规则、概念定义、输出结构与约束。
+- `README.md`：项目定位、模块结构、当前进度与 Roadmap；
+- `docs/requirements-job-analyzer.md`：Job Analyzer 当前产品功能、步骤范围与边界；
+- `prompts/jd_analysis.md`：Step 1 的模型分析规则、概念定义、输出结构与约束；
+- `prompts/match_analysis.md`：Step 2 的模型分析规则、概念定义、输出结构与约束。
 
-不要在代码或本文件中复制完整 Prompt 逻辑。
+不要在代码、requirements 或本文件中复制完整 Prompt 逻辑。
+
+如果 requirements 与对应 Prompt 在模型分析细节上存在差异，以对应 Prompt 为具体分析规则来源；requirements 负责定义产品目标、输入输出范围和步骤边界。
 
 ## Tech Stack
 
@@ -41,11 +52,14 @@
 
 ## Project Structure
 
+当前结构：
+
 ```text
 resume-jd-matcher/
 ├── app.py
 ├── prompts/
-│   └── jd_analysis.md
+│   ├── jd_analysis.md
+│   └── match_analysis.md
 ├── services/
 │   └── llm.py
 ├── docs/
@@ -61,7 +75,7 @@ resume-jd-matcher/
 职责：
 
 - `app.py`：Streamlit 页面和基础用户交互；
-- `prompts/`：独立维护 LLM Prompt；
+- `prompts/`：独立维护各分析步骤的 LLM Prompt；
 - `services/llm.py`：处理 LLM API 调用；
 - `docs/`：保存详细产品需求。
 
@@ -74,6 +88,8 @@ resume-jd-matcher/
 - 不因“工程化”目的引入不必要抽象；
 - 功能复杂度增长后再进一步拆分；
 - 修改尽量保持范围小、目的明确；
+- 已完成的 Step 1 作为稳定前置流程，除非 Step 2 确有依赖需要，不主动重构；
+- 各 LLM 分析步骤应显式传递完成当前任务所需的输入和前置结果，使每次调用尽量自包含；不依赖模型对上一轮 API 调用或隐式会话上下文的记忆；
 - 如果需求存在明显歧义且会影响实现方案，应先指出问题；
 - 修复问题时优先寻找原因，不通过大量临时代码掩盖问题。
 
@@ -103,13 +119,14 @@ V0.1 不主动引入：
 
 ## Implementation Priority
 
-1. 建立项目基本文件；
-2. 创建 Streamlit JD 输入页面；
-3. 加载 `prompts/jd_analysis.md`；
-4. 接入 LLM API；
-5. 显示模型返回结果；
-6. 添加空输入和 API 失败的基本错误处理；
-7. 本地运行并使用真实 JD 测试；
-8. 根据测试结果决定下一步迭代。
+当前阶段按以下顺序推进：
 
-当前阶段以“能够稳定完成一次 JD 分析”为完成目标。
+1. 在 Step 1 结果页增加“清空 / 分析新 JD”和“继续分析”操作；
+2. 点击“继续分析”后自动保留 Step 1 结果并展示个人资料输入；
+3. 将 Step 1 结果与个人资料提交给 `prompts/match_analysis.md` 和 LLM；
+4. 展示 Match & Gap Analysis 结果；
+5. 添加个人资料空输入和 API 失败的基本错误处理；
+6. 使用真实 JD 与个人资料完成 Step 1 → Step 2 端到端测试；
+7. 根据测试结果决定下一步迭代。
+
+当前阶段以“能够稳定完成一次 Step 1 → Step 2 连续分析”为开发完成目标。
